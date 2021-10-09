@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>docker swarm mode 配置使用</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="alfredhuang">
+
+    <!-- Le styles -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.dark.css" type="text/css" />
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      .tag-1 {
+        font-size: 13pt;
+      }
+      .tag-2 {
+        font-size: 10pt;
+      }
+      .tag-2 {
+        font-size: 8pt;
+      }
+      .tag-4 {
+        font-size: 6pt;
+     }
+    </style>
+    <link href="/theme/css/bootstrap-responsive.dark.css" rel="stylesheet">
+        <link href="/theme/css/font-awesome.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/theme/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/theme/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/theme/images/apple-touch-icon-114x114.png">
+
+    <link href="/" type="application/atom+xml" rel="alternate" title="alfredhuang ATOM Feed" />
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/index.html">alfredhuang </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+                          <li class="divider-vertical"></li>
+                  <li class="active">
+                    <a href="/category/docker.html">
+						<i class="icon-folder-open icon-large"></i>docker
+					</a>
+                  </li>
+                  <li >
+                    <a href="/category/ji-zhu.html">
+						<i class="icon-folder-open icon-large"></i>技术
+					</a>
+                  </li>
+
+                          <ul class="nav pull-right">
+                                <li><a href="/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+                          </ul>
+
+            </ul>
+            <!--<p class="navbar-text pull-right">Logged in as <a href="#">username</a></p>-->
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="span9" id="content">
+<section id="content">
+        <article>
+                <header>
+                        <h1>
+                                <a href=""
+                                        rel="bookmark"
+                                        title="Permalink to docker swarm mode 配置使用">
+                                        docker swarm mode 配置使用
+                                </a>
+                        </h1>
+                </header>
+                <div class="entry-content">
+                <div class="well">
+<footer class="post-info">
+<span class="label">Date</span>
+<abbr class="published" title="2016-06-25T00:00:00+08:00">
+        <i class="icon-calendar"></i>六 25 六月 2016
+</abbr>
+<span class="label">By</span>
+<a href="/author/alfredhuang.html"><i class="icon-user"></i>alfredhuang</a>
+<span class="label">Category</span>
+<a href="/category/docker.html"><i class="icon-folder-open"></i>docker</a>.
+
+
+<span class="label">Tags</span>
+	<a href="/tag/docker.html"><i class="icon-tag"></i>docker</a>
+	<a href="/tag/swarm.html"><i class="icon-tag"></i>swarm</a>
+</footer><!-- /.post-info -->                </div>
+                <h2>swarm mode说明</h2>
+<p>swarm mode 是 docker 在1.12版本中引入的集群配置工具,将原本的 docker swarm 集群配置工具直接集成在了 docker-engine 中.这种情况下,在只安装了docker-engine的情况下,都可以完成 docker 集群的组建和相应的操作.</p>
+<h2>运行环境</h2>
+<p>ubuntu14.04.4</p>
+<p>4.2.0 kernel</p>
+<p>docker 1.12.0-rc2 (注意:在docker 1.12.0-rc1后才有swarm mode)</p>
+<p>准备了ip分别为192.168.4.231/232/233的3台主机</p>
+<p>此时查看 <code>docker info</code> 中, Swarm状态为inactive.</p>
+<h2>创建集群</h2>
+<p>在主机231上执行 <code>docker swarm init --listen-addr 192.168.4.231:2377</code></p>
+<p>此时通过 <code>docker info</code> 查看 Swarm 状态如下:</p>
+<div class="highlight"><pre><span></span><code>Swarm: active
+ NodeID: 1lsp4r0esfl6a7vtg5hb02ztm
+ IsManager: Yes
+ Managers: <span class="m">1</span>
+ Nodes: <span class="m">1</span>
+ CACertHash: sha256:63030424e110733683d6f7543e3887f12021a1704592960e492a170144c025f5
+</code></pre></div>
+
+<p>通过 <code>docker node ls</code> 查看如下:</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker node ls
+ID                           NAME       MEMBERSHIP  STATUS  AVAILABILITY  MANAGER STATUS
+1lsp4r0esfl6a7vtg5hb02ztm *  ubuntu231  Accepted    Ready   Active        Leader
+</code></pre></div>
+
+<p>通过 <code>docker swarm inspect</code> 查看如下:</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker swarm inspect
+<span class="o">[</span>
+    <span class="o">{</span>
+        <span class="s2">&quot;ID&quot;</span>: <span class="s2">&quot;6toicfhqgbbjucri68f2pcgs2&quot;</span>,
+        <span class="s2">&quot;Version&quot;</span>: <span class="o">{</span>
+            <span class="s2">&quot;Index&quot;</span>: <span class="m">11</span>
+        <span class="o">}</span>,
+        <span class="s2">&quot;CreatedAt&quot;</span>: <span class="s2">&quot;2016-07-04T12:07:56.816450141Z&quot;</span>,
+        <span class="s2">&quot;UpdatedAt&quot;</span>: <span class="s2">&quot;2016-07-04T12:07:56.996227642Z&quot;</span>,
+        <span class="s2">&quot;Spec&quot;</span>: <span class="o">{</span>
+            <span class="s2">&quot;Name&quot;</span>: <span class="s2">&quot;default&quot;</span>,
+            <span class="s2">&quot;AcceptancePolicy&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;Policies&quot;</span>: <span class="o">[</span>
+                    <span class="o">{</span>
+                        <span class="s2">&quot;Role&quot;</span>: <span class="s2">&quot;worker&quot;</span>,
+                        <span class="s2">&quot;Autoaccept&quot;</span>: <span class="nb">true</span>
+                    <span class="o">}</span>,
+                    <span class="o">{</span>
+                        <span class="s2">&quot;Role&quot;</span>: <span class="s2">&quot;manager&quot;</span>,
+                        <span class="s2">&quot;Autoaccept&quot;</span>: <span class="nb">false</span>
+                    <span class="o">}</span>
+                <span class="o">]</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;Orchestration&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;TaskHistoryRetentionLimit&quot;</span>: <span class="m">10</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;Raft&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;SnapshotInterval&quot;</span>: <span class="m">10000</span>,
+                <span class="s2">&quot;LogEntriesForSlowFollowers&quot;</span>: <span class="m">500</span>,
+                <span class="s2">&quot;HeartbeatTick&quot;</span>: <span class="m">1</span>,
+                <span class="s2">&quot;ElectionTick&quot;</span>: <span class="m">3</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;Dispatcher&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;HeartbeatPeriod&quot;</span>: <span class="m">5000000000</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;CAConfig&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;NodeCertExpiry&quot;</span>: <span class="m">7776000000000000</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">]</span>
+</code></pre></div>
+
+<h2>节点加入集群</h2>
+<p>在232/233两主机上执行 <code>docker swarm join 192.168.4.231:2377</code></p>
+<p>此时两主机上查看 <code>docker info</code>:</p>
+<div class="highlight"><pre><span></span><code>Swarm: active
+ NodeID: f51y1qkkarppreo9kt93f4zuy
+ IsManager: No
+</code></pre></div>
+
+<p>此时两主机上查看 <code>docker node ls</code>:</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu233:~# docker node ls
+Error response from daemon: This node is not participating as a Swarm manager
+</code></pre></div>
+
+<p>在231上查看 <code>docker info</code>:</p>
+<div class="highlight"><pre><span></span><code>Swarm: active
+ NodeID: 1lsp4r0esfl6a7vtg5hb02ztm
+ IsManager: Yes
+ Managers: <span class="m">1</span>
+ Nodes: <span class="m">3</span>
+ CACertHash: sha256:63030424e110733683d6f7543e3887f12021a1704592960e492a170144c025f5
+</code></pre></div>
+
+<p>在231上查看 <code>docker node ls</code>:</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker node ls
+ID                           NAME       MEMBERSHIP  STATUS  AVAILABILITY  MANAGER STATUS
+1lsp4r0esfl6a7vtg5hb02ztm *  ubuntu231  Accepted    Ready   Active        Leader
+6dd63h58bw9vhuxp94208kq0a    ubuntu233  Accepted    Ready   Active        
+f51y1qkkarppreo9kt93f4zuy    ubuntu232  Accepted    Ready   Active        
+</code></pre></div>
+
+<p>在231上查看 <code>docker swarm inspect</code>:</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker swarm inspect
+<span class="o">[</span>
+    <span class="o">{</span>
+        <span class="s2">&quot;ID&quot;</span>: <span class="s2">&quot;6toicfhqgbbjucri68f2pcgs2&quot;</span>,
+        <span class="s2">&quot;Version&quot;</span>: <span class="o">{</span>
+            <span class="s2">&quot;Index&quot;</span>: <span class="m">11</span>
+        <span class="o">}</span>,
+        <span class="s2">&quot;CreatedAt&quot;</span>: <span class="s2">&quot;2016-07-04T12:07:56.816450141Z&quot;</span>,
+        <span class="s2">&quot;UpdatedAt&quot;</span>: <span class="s2">&quot;2016-07-04T12:07:56.996227642Z&quot;</span>,
+        <span class="s2">&quot;Spec&quot;</span>: <span class="o">{</span>
+            <span class="s2">&quot;Name&quot;</span>: <span class="s2">&quot;default&quot;</span>,
+            <span class="s2">&quot;AcceptancePolicy&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;Policies&quot;</span>: <span class="o">[</span>
+                    <span class="o">{</span>
+                        <span class="s2">&quot;Role&quot;</span>: <span class="s2">&quot;worker&quot;</span>,
+                        <span class="s2">&quot;Autoaccept&quot;</span>: <span class="nb">true</span>
+                    <span class="o">}</span>,
+                    <span class="o">{</span>
+                        <span class="s2">&quot;Role&quot;</span>: <span class="s2">&quot;manager&quot;</span>,
+                        <span class="s2">&quot;Autoaccept&quot;</span>: <span class="nb">false</span>
+                    <span class="o">}</span>
+                <span class="o">]</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;Orchestration&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;TaskHistoryRetentionLimit&quot;</span>: <span class="m">10</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;Raft&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;SnapshotInterval&quot;</span>: <span class="m">10000</span>,
+                <span class="s2">&quot;LogEntriesForSlowFollowers&quot;</span>: <span class="m">500</span>,
+                <span class="s2">&quot;HeartbeatTick&quot;</span>: <span class="m">1</span>,
+                <span class="s2">&quot;ElectionTick&quot;</span>: <span class="m">3</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;Dispatcher&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;HeartbeatPeriod&quot;</span>: <span class="m">5000000000</span>
+            <span class="o">}</span>,
+            <span class="s2">&quot;CAConfig&quot;</span>: <span class="o">{</span>
+                <span class="s2">&quot;NodeCertExpiry&quot;</span>: <span class="m">7776000000000000</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">]</span>
+</code></pre></div>
+
+<p>可以看到 231 主机为 manager 节点,其他两个为 worker 节点.在 worker 节点上,无法查看 swarm node 信息.</p>
+<h2>通过服务使用集群</h2>
+<p>在231,即 manager 节点上,通过执行如下命令启动一个服务.</p>
+<p><code>docker service create --replicas 3 --name test busybox ping www.baidu.com</code></p>
+<p>执行后通过 <code>docker service ls</code> 查看服务情况.</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker service ls
+ID            NAME  REPLICAS  IMAGE    COMMAND
+52mpkhlszznu  <span class="nb">test</span>  <span class="m">3</span>/3       busybox  ping www.baidu.com
+</code></pre></div>
+
+<p>可以看到此服务复制数为3.</p>
+<p>分别在3台主机查看容器</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker ps
+CONTAINER ID        IMAGE               COMMAND                CREATED              STATUS              PORTS               NAMES
+4c2c3d36ee0d        busybox:latest      <span class="s2">&quot;ping www.baidu.com&quot;</span>   About a minute ago   Up About a minute                       test.1.bx4hz20s11msmlp04w3uerg18
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>root@ubuntu232:~# docker ps
+CONTAINER ID        IMAGE               COMMAND                CREATED              STATUS              PORTS               NAMES
+5fb24cf0ff0e        busybox:latest      <span class="s2">&quot;ping www.baidu.com&quot;</span>   About a minute ago   Up About a minute                       test.3.358cfwsw2ty2brt5ve045r61b
+</code></pre></div>
+
+<div class="highlight"><pre><span></span><code>root@ubuntu233:~# docker ps
+CONTAINER ID        IMAGE               COMMAND                CREATED              STATUS              PORTS               NAMES
+104191844da9        busybox:latest      <span class="s2">&quot;ping www.baidu.com&quot;</span>   About a minute ago   Up About a minute                       test.2.971p65qenkoqdo6hpvkq9f5id
+</code></pre></div>
+
+<p>可以看到此服务的容器被平均分布到3台主机上去运行了.</p>
+<p>也可以通过在 manager 节点上执行 <code>docker service tasks test</code> 查看此服务任务的分布情况.</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker service tasks <span class="nb">test</span>
+ID                         NAME    SERVICE  IMAGE    LAST STATE         DESIRED STATE  NODE
+bx4hz20s11msmlp04w3uerg18  test.1  <span class="nb">test</span>     busybox  Running <span class="m">5</span> minutes  Running        ubuntu231
+971p65qenkoqdo6hpvkq9f5id  test.2  <span class="nb">test</span>     busybox  Running <span class="m">5</span> minutes  Running        ubuntu233
+358cfwsw2ty2brt5ve045r61b  test.3  <span class="nb">test</span>     busybox  Running <span class="m">5</span> minutes  Running        ubuntu232
+</code></pre></div>
+
+<p>在使用 service 服务的时候,每台主机上的 docker run 还是可以一样正常使用.</p>
+<h2>服务规模调整</h2>
+<p>在 manager 节点上执行命令 <code>docker service scale test=5</code> 即可完成服务扩容.此处是将test 服务的容器数扩容到 5.</p>
+<p>通过 <code>docker service tasks test</code> 查看服务:</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker service tasks <span class="nb">test</span>
+ID                         NAME    SERVICE  IMAGE    LAST STATE          DESIRED STATE  NODE
+bx4hz20s11msmlp04w3uerg18  test.1  <span class="nb">test</span>     busybox  Running <span class="m">15</span> minutes  Running        ubuntu231
+971p65qenkoqdo6hpvkq9f5id  test.2  <span class="nb">test</span>     busybox  Running <span class="m">15</span> minutes  Running        ubuntu233
+358cfwsw2ty2brt5ve045r61b  test.3  <span class="nb">test</span>     busybox  Running <span class="m">15</span> minutes  Running        ubuntu232
+b1cu1mwnw98oymi1vgbcl3l84  test.4  <span class="nb">test</span>     busybox  Running <span class="m">20</span> seconds  Running        ubuntu232
+7t8kfpfv4zegut9fbc1bbwaf6  test.5  <span class="nb">test</span>     busybox  Running <span class="m">20</span> seconds  Running        ubuntu231
+</code></pre></div>
+
+<p>可以看到在经过一段时间后,此服务的容器数扩展到5个,并调度到不同主机上.</p>
+<p>同理, 通过 <code>docker service scale test=2</code> 此命令指定不同的 scale 数,可以随意控制服务的容器数量.</p>
+<div class="highlight"><pre><span></span><code>root@ubuntu231:~# docker service tasks <span class="nb">test</span>
+ID                         NAME    SERVICE  IMAGE    LAST STATE          DESIRED STATE  NODE
+358cfwsw2ty2brt5ve045r61b  test.3  <span class="nb">test</span>     busybox  Running <span class="m">17</span> minutes  Running        ubuntu232
+7t8kfpfv4zegut9fbc1bbwaf6  test.5  <span class="nb">test</span>     busybox  Running <span class="m">2</span> minutes   Running        ubuntu231
+</code></pre></div>
+
+<p>缩容的话, docker 会随机选择容器关闭.</p>
+<h2>服务移除</h2>
+<p>通过 <code>docker service rm test</code> 即可移除服务. 当移除服务后, 每台主机上相关的容器也就被移除了.</p>
+                </div><!-- /.entry-content -->
+        </article>
+</section>
+        </div><!--/span-->
+
+                <div class="span3 well sidebar-nav" id="sidebar">
+<ul class="nav nav-list">
+<li class="nav-header"><h4><i class="icon-external-link"></i>blogroll</h4></li>
+    <li><a href="https://getpelican.com/"><i class="icon-external-link"></i>Pelican</a></li>
+
+<li class="nav-header"><h4><i class="icon-folder-close icon-large"></i>Categories</h4></li>
+<li>
+<a href="/category/docker.html">
+    <i class="icon-folder-open icon-large"></i>docker
+</a>
+</li>
+<li>
+<a href="/category/ji-zhu.html">
+    <i class="icon-folder-open icon-large"></i>技术
+</a>
+</li>
+
+<li class="nav-header"><h4><i class="icon-tags icon-large"></i>Tags</h4></li>
+
+
+</ul>        </div><!--/.well -->
+
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p><a href="https://beian.miit.gov.cn">粤ICP备17154459号</a></p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+
+
+    <!-- Le javascript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/theme/js/jquery-1.7.2.min.js"></script>
+    <script src="/theme/js/bootstrap.min.js"></script>
+  </body>
+</html>

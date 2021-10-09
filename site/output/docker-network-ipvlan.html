@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>docker跨主机ipvlan网络配置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="alfredhuang">
+
+    <!-- Le styles -->
+    <link rel="stylesheet" href="/theme/css/bootstrap.dark.css" type="text/css" />
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      .tag-1 {
+        font-size: 13pt;
+      }
+      .tag-2 {
+        font-size: 10pt;
+      }
+      .tag-2 {
+        font-size: 8pt;
+      }
+      .tag-4 {
+        font-size: 6pt;
+     }
+    </style>
+    <link href="/theme/css/bootstrap-responsive.dark.css" rel="stylesheet">
+        <link href="/theme/css/font-awesome.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="/theme/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/theme/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/theme/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/theme/images/apple-touch-icon-114x114.png">
+
+    <link href="/" type="application/atom+xml" rel="alternate" title="alfredhuang ATOM Feed" />
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/index.html">alfredhuang </a>
+          <div class="nav-collapse">
+            <ul class="nav">
+                          <li class="divider-vertical"></li>
+                  <li class="active">
+                    <a href="/category/docker.html">
+						<i class="icon-folder-open icon-large"></i>docker
+					</a>
+                  </li>
+                  <li >
+                    <a href="/category/ji-zhu.html">
+						<i class="icon-folder-open icon-large"></i>技术
+					</a>
+                  </li>
+
+                          <ul class="nav pull-right">
+                                <li><a href="/archives.html"><i class="icon-th-list"></i>Archives</a></li>
+                          </ul>
+
+            </ul>
+            <!--<p class="navbar-text pull-right">Logged in as <a href="#">username</a></p>-->
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="span9" id="content">
+<section id="content">
+        <article>
+                <header>
+                        <h1>
+                                <a href=""
+                                        rel="bookmark"
+                                        title="Permalink to docker跨主机ipvlan网络配置">
+                                        docker跨主机ipvlan网络配置
+                                </a>
+                        </h1>
+                </header>
+                <div class="entry-content">
+                <div class="well">
+<footer class="post-info">
+<span class="label">Date</span>
+<abbr class="published" title="2016-06-25T00:00:00+08:00">
+        <i class="icon-calendar"></i>六 25 六月 2016
+</abbr>
+<span class="label">By</span>
+<a href="/author/alfredhuang.html"><i class="icon-user"></i>alfredhuang</a>
+<span class="label">Category</span>
+<a href="/category/docker.html"><i class="icon-folder-open"></i>docker</a>.
+
+
+<span class="label">Tags</span>
+	<a href="/tag/docker.html"><i class="icon-tag"></i>docker</a>
+	<a href="/tag/network.html"><i class="icon-tag"></i>network</a>
+</footer><!-- /.post-info -->                </div>
+                <h2>说明</h2>
+<p>ipvlan的网络配置很类似与macvlan,见 <a href="docker跨主机macvlan网络配置.md">docker跨主机macvlan网络配置</a></p>
+<h2>搭建环境</h2>
+<ul>
+<li>
+<p>virtualbox, ubuntu14.04.4 内核4.2.0 docker 1.12.0-rc2</p>
+</li>
+<li>
+<p>virtualbox上运行两套主机系统,设置使用桥接模式,网卡混杂模式开启全部允许.</p>
+</li>
+</ul>
+<p><strong>注意</strong> : 不用类似于macvlan,在主机上的网口,无需开启混杂模式</p>
+<h2>搭建过程1-不使用vlan</h2>
+<h3>1. 创建docker ipvlan网络</h3>
+<p>两台主机上 eth0 使用分别为 192.168.4.236/192.168.4.237. 分别在两台主机上使用相同命令 <code>docker network create -d ipvlan --subnet=192.168.4.0/24 --gateway=192.168.4.1 -o parent=eth0 -o ipvlan_mode=l2 eth0_1</code> 创建eth0_1的ipvlan网络.</p>
+<h3>2. 创建容器</h3>
+<p>主机1 运行容器 使用命令:</p>
+<p><code>docker run --net=eth0_1 --ip=192.168.4.101 -id --name test101 busybox sh</code></p>
+<p><code>docker run --net=eth0_1 --ip=192.168.4.102 -id --name test102 busybox sh</code></p>
+<p>主机2 运行容器 使用命令:</p>
+<p><code>docker run --net=eth0_1 --ip=192.168.4.201 -id --name test201 busybox sh</code></p>
+<p><code>docker run --net=eth0_1 --ip=192.168.4.202 -id --name test202 busybox sh</code></p>
+<h3>3. 测试网络</h3>
+<p>主机1上测试:</p>
+<p>运行命令:</p>
+<p><code>docker exec test101 ping 192.168.4.1</code> ping网关: <strong>通</strong></p>
+<p><code>docker exec test101 ping test102</code> 使用容器名ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test102 ping 192.168.4.101</code> ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test102 ping 192.168.4.199</code> ping本网络其他主机: <strong>通</strong></p>
+<p><code>docker exec test101 ping 192.168.4.201</code> ping另一主机容器: <strong>通</strong></p>
+<p><code>docker exec test101 ping test201</code> 使用容器名ping另一主机容器: <strong>不通</strong></p>
+<p><code>ping 192.168.4.101</code> 本主机ping本主机容器: <strong>不通</strong></p>
+<p><code>ping 192.168.4.201</code> 本主机ping另一主机容器: <strong>通</strong></p>
+<p>主机2上测试获取相同结果.</p>
+<h2>搭建过程2-使用vlan</h2>
+<h3>1. 创建vlan</h3>
+<p>使用命令<code>vconfig add eth0 100</code> 创建eth0.100的vlan.设置两台主机的vlan ip分别为192.168.15.50/192.168.15.51</p>
+<h3>2. 创建docker ipvlan网络</h3>
+<p>分别在两台主机上使用命令 <code>docker network create -d ipvlan --subnet=192.168.100.0/24 --gateway=192.168.100.1 -o parent=eth0.100 -o ipvlan_mode=l2 100_1</code> 创建相同的100_1的ipvlan网络.</p>
+<h3>3. 创建容器</h3>
+<p>主机1 运行容器 使用命令:</p>
+<p><code>docker run --net=100_1 --ip=192.168.100.101 -id --name test100.101 busybox sh</code></p>
+<p><code>docker run --net=100_1 --ip=192.168.100.102 -id --name test100.102 busybox sh</code></p>
+<p>主机2 运行容器 使用命令:</p>
+<p><code>docker run --net=100_1 --ip=192.168.100.201 -id --name test100.201 busybox sh</code></p>
+<p><code>docker run --net=100_1 --ip=192.168.100.202 -id --name test100.202 busybox sh</code></p>
+<h3>4. 测试网络</h3>
+<p>主机1上测试:</p>
+<p>运行命令:</p>
+<p><code>docker exec test100.101 ping 192.168.100.1</code> ping网关: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.15.50</code> ping本地eth0.100地址: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.15.51</code> ping另一个主机的eth0.100地址: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.100.102</code> ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.100.201</code> ping另一主机容器: <strong>通</strong></p>
+<p><code>docker exec test100.101 ping test100.102</code> 使用容器名ping本主机容器: <strong>通</strong></p>
+<p><code>docker exec test100.101 ping test100.201</code> 使用容器名ping另一主机容器: <strong>不通</strong></p>
+<p><code>docker exec test100.101 ping 192.168.4.199</code> ping跨网络主机: <strong>不通</strong></p>
+<p><code>ping 192.168.100.101</code> 本主机ping本主机容器: <strong>不通</strong></p>
+<p><code>ping 192.168.100.201</code> 本主机ping另一主机容器: <strong>不通</strong></p>
+<p>主机2测试相同</p>
+<h2>一些问题</h2>
+<p>ipvlan网络在创建时要指定parent.其中parent仅能使用一次,即eth0在创建一个网络时使用了,则在创建另一个的时候就无法再使用了.</p>
+<p>ipvlan网络的子网不能和vlan网络的网段相同,如果相同反而导致ipvlan网络内的容器无法跨主机通讯.</p>
+<p>在创建ipvlan的时候,如果不指定网段,默认网段为172.18.0.0/16, 此时加入此网络的容器,在同一台主机上时可以互相ping通,无法ping通外部网络,同时加入此网络的容器,创建时不能手工指定ip,仅能使用ipam自动分配.</p>
+<p><strong>在使用和主机相同网段的ipvlan时,如果在创建容器时不指定ip,则默认ipam从192.168.4.2开始分配,不检查网段内是否已有相同ip,这种情况下会造成容器ip和网络内其他设备ip冲突.</strong></p>
+                </div><!-- /.entry-content -->
+        </article>
+</section>
+        </div><!--/span-->
+
+                <div class="span3 well sidebar-nav" id="sidebar">
+<ul class="nav nav-list">
+<li class="nav-header"><h4><i class="icon-external-link"></i>blogroll</h4></li>
+    <li><a href="https://getpelican.com/"><i class="icon-external-link"></i>Pelican</a></li>
+
+<li class="nav-header"><h4><i class="icon-folder-close icon-large"></i>Categories</h4></li>
+<li>
+<a href="/category/docker.html">
+    <i class="icon-folder-open icon-large"></i>docker
+</a>
+</li>
+<li>
+<a href="/category/ji-zhu.html">
+    <i class="icon-folder-open icon-large"></i>技术
+</a>
+</li>
+
+<li class="nav-header"><h4><i class="icon-tags icon-large"></i>Tags</h4></li>
+
+
+</ul>        </div><!--/.well -->
+
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p><a href="https://beian.miit.gov.cn">粤ICP备17154459号</a></p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+
+
+    <!-- Le javascript -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="/theme/js/jquery-1.7.2.min.js"></script>
+    <script src="/theme/js/bootstrap.min.js"></script>
+  </body>
+</html>

@@ -1,6 +1,5 @@
 Title: 第一篇文章
-Date: 2021-10-09 18:20
-Modified: 2021-10-09 18:20
+Date: 2021-10-09 
 Category: 技术
 Tags: pelican
 Slug: my-post
